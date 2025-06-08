@@ -5,9 +5,6 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRive, useStateMachineInput } from "@rive-app/react-canvas";
 
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -16,13 +13,17 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
+import { useAuth } from "~/context/AuthProvider";
+import { Checkbox } from "~/components/ui/checkbox";
 
 type FormData = InferType<typeof FormSchema>;
 
 const FormSchema = yup
   .object()
   .shape({
-    username: yup.string().required(),
+    email: yup.string().required(),
     password: yup.string().required(),
   })
   .required();
@@ -34,6 +35,7 @@ export function Login() {
     stateMachines: stateMachineName,
     autoplay: true,
   });
+  const { login: loginContext } = useAuth();
 
   const checkType = useStateMachineInput(rive, stateMachineName, "isFocus");
   const isPrivateField = useStateMachineInput(
@@ -56,15 +58,25 @@ export function Login() {
   const form = useForm({
     resolver: yupResolver(FormSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted with data:", data);
-    if (successType) {
-      successType.fire();
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await loginContext(data);
+
+      console.log("Login successful:", response);
+
+      if (successType) {
+        successType.fire();
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      if (failType) {
+        failType.fire();
+      }
     }
   };
 
@@ -109,7 +121,7 @@ export function Login() {
 
   return (
     <main className="mx-auto">
-      <section className="bg-gray-50 dark:bg-gray-900 h-screen flex items-center justify-center">
+      <section className="bg-gray-50 dark:bg-gray-900 h-screen flex items-center justify-center flex-col md:flex-row">
         <div className="w-full place-self-center lg:col-span-6">
           <div className="p-6 mx-auto bg-white rounded-lg shadow dark:bg-gray-800 sm:max-w-xl sm:p-8">
             <h1 className="mb-8 text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white">
@@ -132,16 +144,20 @@ export function Login() {
               >
                 <FormField
                   control={form.control}
-                  name="username"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter your username"
+                          placeholder="Enter your email"
                           className="h-12"
                           onFocus={handleFocus}
-                          type="text"
+                          type="email"
+                          autoCorrect="off"
+                          autoCapitalize="none"
+                          spellCheck="false"
+                          autoComplete="new-password"
                           {...field}
                         />
                       </FormControl>
@@ -253,7 +269,7 @@ export function Login() {
             </Form>
           </div>
         </div>
-        <div className="mr-auto place-self-center flex items-center justify-center w-full h-full">
+        <div className="mr-auto place-self-center items-center justify-center w-full h-full hidden md:block lg:col-span-6">
           <RiveComponent />
         </div>
       </section>
