@@ -1,10 +1,12 @@
 import * as yup from "yup";
+// import { useEffect } from "react";
 import type { InferType } from "yup";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useRive, useStateMachineInput } from "@rive-app/react-canvas";
 
-import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
   Form,
@@ -14,9 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { yupResolver } from "@hookform/resolvers/yup";
 
-import { useEffect } from "react";
 type FormData = InferType<typeof FormSchema>;
 
 const FormSchema = yup
@@ -27,7 +27,7 @@ const FormSchema = yup
   })
   .required();
 
-export function About() {
+export function Login() {
   const stateMachineName = "Login Machine";
   const { rive, RiveComponent } = useRive({
     src: "teddy.riv",
@@ -68,24 +68,21 @@ export function About() {
     }
   };
 
-  useEffect(() => {
-    if (rive) {
-      const inputs = rive.stateMachineInputs(stateMachineName);
-      console.log("Inputs:");
-      inputs?.forEach((input) => {
-        console.log("→", input.name, "type:", input.type);
-      });
-    }
-  }, [rive]);
+  // useEffect(() => {
+  //   if (rive) {
+  //     const inputs = rive.stateMachineInputs(stateMachineName);
+  //     console.log("Inputs:");
+  //     inputs?.forEach((input) => {
+  //       console.log("→", input.name, "type:", input.type);
+  //     });
+  //   }
+  // }, [rive]);
 
   const focusPassword = () => {
     if (isPrivateField) {
       isPrivateField.fire();
       isPrivateField.value = true;
     }
-    // if (lookType) {
-    //   lookType.value = true;
-    // }
   };
 
   const handleFocus = () => {
@@ -95,9 +92,6 @@ export function About() {
       isPrivateField?.fire();
       isPrivateField.value = false;
     }
-    // if (isPrivateField) {
-    //   handupType.value = false;
-    // }
   };
 
   const handleRememberMeClick = () => {

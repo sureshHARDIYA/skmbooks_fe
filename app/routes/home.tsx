@@ -3,8 +3,12 @@ import { Welcome } from "../welcome/welcome";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "SKM Learn – Free Books, Quizzes & Practice Tests for All Ages" },
+    {
+      name: "description",
+      content:
+        "Explore free educational books, fun quizzes, and practice tests on SKM Learn. Start learning now with engaging and interactive content for all levels.",
+    },
   ];
 }
 
