@@ -11,7 +11,7 @@ import API from "~/lib/axios";
 
 interface AuthContextType {
   user: any;
-  login: (credentials: { username: string; password: string }) => Promise<void>;
+  login: (credentials: { email: string; password: string }) => Promise<void>;
   logout: () => void;
   loading: boolean;
   isAuthenticated: boolean;
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", res.data.access);
       localStorage.setItem("refresh", res.data.refresh);
 
-      if (res.data.acces) {
+      if (res.data.access) {
         const userRes = await API.get("/auth/users/me/");
         setUser(userRes.data);
         setLoading(false);
