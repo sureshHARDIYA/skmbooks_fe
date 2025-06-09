@@ -1,7 +1,8 @@
 import * as yup from "yup";
-// import { useEffect } from "react";
+import { useEffect } from "react";
 import type { InferType } from "yup";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRive, useStateMachineInput } from "@rive-app/react-canvas";
 
@@ -35,7 +36,9 @@ export function Login() {
     stateMachines: stateMachineName,
     autoplay: true,
   });
-  const { login: loginContext } = useAuth();
+  const { login: loginContext, isAuthenticated } = useAuth();
+
+  const navigate = useNavigate();
 
   const checkType = useStateMachineInput(rive, stateMachineName, "isFocus");
   const isPrivateField = useStateMachineInput(
@@ -65,9 +68,7 @@ export function Login() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await loginContext(data);
-
-      console.log("Login successful:", response);
+      await loginContext(data as any);
 
       if (successType) {
         successType.fire();
@@ -89,6 +90,16 @@ export function Login() {
   //     });
   //   }
   // }, [rive]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      alert("You are authenticated, redirecting to dashboard...");
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    }
+  }, [isAuthenticated]);
 
   const focusPassword = () => {
     if (isPrivateField) {
